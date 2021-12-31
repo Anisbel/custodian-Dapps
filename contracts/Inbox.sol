@@ -11,7 +11,5 @@ function setMessage(string newMess) public {
     message=newMess;
 }
 
-function getMessage() public view returns(string){
-    return message;
-}
+
 }
