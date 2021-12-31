@@ -1,15 +1,16 @@
-pragma solidity 0.4.17;
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
 
 contract Inbox {
+    string public message;
 
-string public message;  
+    constructor(string memory initMsg) {
+        message = initMsg;
+    }
 
-function Inbox(string initialMessage) public {
-    message=initialMessage;
-}
-function setMessage(string newMess) public {
-    message=newMess;
-}
-
-
+    function setMsg(string memory newMsg) public {
+        message = newMsg;
+    }
 }
