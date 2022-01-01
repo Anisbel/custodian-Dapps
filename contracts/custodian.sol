@@ -22,7 +22,6 @@ contract Custodian {
         address lenderAdress;
         uint cashBorrowed; 
         Collateral [] collaterals;
-       // mapping(string =>Collateral) collateralsPosted;
         Rules rules;
         bool approvedByCounterParty;
     }
@@ -49,6 +48,10 @@ contract Custodian {
         _;
     }
 
+    modifier fullyCollateralized(uint id, uint cash) {
+        require(cash>valuateCollateral(id), "Cash not fully collateralized,borrower can add more collateral");
+        _;
+    }
     function initiateContract( address payable borrowerAdress,uint cashBorrowed,uint maintenanceMargin,uint  liquidationTime,uint gradePermited ) public
     {
         uint id =random();
@@ -69,6 +72,18 @@ contract Custodian {
         indexColl++;
     }
 
+    function submitCashToBorrower(uint id) public restricted(id) fullyCollateralized(id,msg.value) payable {
+        address payable borrower =trades[id].borrowerAdress;
+        borrower.transfer(msg.value);
+    }
+
+    function valuateCollateral(uint id ) public restricted(id)  view returns (uint)  {
+        uint totalValuation=0;
+        for (uint i = 0; i < trades[id].collaterals.length; ++i) {
+            totalValuation+= trades[id].collaterals[i].quantity * trades[id].collaterals[i].price;
+        }  
+        return totalValuation;
+    }
 
     function approveContractByBorrower(bool approve,uint id ) public restricted(id){
         trades[id].approvedByCounterParty=approve;
